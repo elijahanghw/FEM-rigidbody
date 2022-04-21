@@ -10,9 +10,9 @@ num_elements = 4
 L_e = 2*semi_span/num_elements
 
 # Define structural properties
-M_ext = 0     # External mass
+M_ext = 10     # External mass
 mu = 20      # Beam mass per unit length
-EI = 1e3     # Bending stiffness
+EI = 1e2     # Bending stiffness
 M_total = M_ext + 2*semi_span*mu
 
 # Simulation parameters
@@ -22,7 +22,8 @@ TIME_STEPS = 1000
 dt = 0.01
 alpha = 0.0001
 t = np.arange(tstart, tstop+1, dt)
-Ft = 1*np.ones_like(t)
+Ft = 10*np.ones_like(t)
+F_ext = 10
 
 # Define Element Matrices
 K_e = np.array([[12*EI/(L_e**3), 6*EI/(L_e**2), -12*EI/(L_e**3), 6*EI/(L_e**2)],
@@ -35,20 +36,7 @@ M_e = mu*L_e/420*np.array([[156, 22*L_e, 54, -13*L_e],
                            [54, 13*L_e, 156, -22*L_e],
                            [-13*L_e, -3*L_e**2, -22*L_e, 4*L_e**2]])
 
-# R_e = np.array([[mu*L_e/2, mu*L_e**2/12, 5*mu*L_e/6, -mu*L_e**2/12]])
-R_e = np.array([[0, 0, 0, 0]])
-
-# M_e = np.array([[1, 1, 1, 1],
-#                 [1, 1, 1, 1],
-#                 [1, 1, 1, 1],
-#                 [1, 1, 1, 1]])
-
-# K_e = np.array([[1, 1, 1, 1],
-#                 [1, 1, 1, 1],
-#                 [1, 1, 1, 1],
-#                 [1, 1, 1, 1]])
-
-# R_e = np.array([[1, 1, 1, 1]])
+R_e = np.array([[mu*L_e/2, mu*L_e**2/12, mu*L_e/2, -mu*L_e**2/12]])
 
 # Assemble Global Matrices
 K_global = np.zeros((2*(num_elements+1)+1, 2*(num_elements+1)+1))
@@ -109,9 +97,9 @@ Q_old = np.concatenate((q, q_dot, q_dotdot), axis=0)
 F_old = np.zeros(2*num_elements+1)
 F_old = np.concatenate((F_old, np.zeros(2*num_elements+1), np.zeros(2*num_elements+1)), axis=0)
 
-F_old[0] = 1
-F_old[2*num_elements-2] = -1
-F_old[2*num_elements] = F_old[0] + F_old[2*num_elements-2]
+F_old[0] = 0
+F_old[2*num_elements-2] = 0
+F_old[2*num_elements] = F_old[0] + F_old[2*num_elements-2] + F_ext
 
 CG = []
 tip_left = []
