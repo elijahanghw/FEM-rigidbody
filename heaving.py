@@ -6,21 +6,20 @@ from scipy.linalg import eig
 
 # Define geometry
 semi_span = 5
-num_elements = 4
+num_elements = 8
 L_e = 2*semi_span/num_elements
 
 # Define structural properties
 M_ext = 10     # External mass
-mu = 20      # Beam mass per unit length
-EI = 1e2     # Bending stiffness
+mu = 100      # Beam mass per unit length
+EI = 1e3     # Bending stiffness
 M_total = M_ext + 2*semi_span*mu
 
 # Simulation parameters
 tstart = 0
 tstop = 10
-TIME_STEPS = 1000
 dt = 0.01
-alpha = 0.0001
+alpha = 0.0001      # Numerical damping for Newmark-beta
 t = np.arange(tstart, tstop+1, dt)
 Ft = 10*np.ones_like(t)
 F_ext = 10
@@ -104,25 +103,35 @@ F_old[2*num_elements] = F_old[0] + F_old[2*num_elements-2] + F_ext
 CG = []
 tip_left = []
 tip_right = []
-time = []
 
-for T in range(TIME_STEPS):
-    print(T)
+tip_left_local = []
+tip_right_local = []
+
+for time in t:
     RHS = F_old - np.matmul(B, Q_old)
     Q_new = np.matmul(inv(A), RHS)
-
     CG.append(Q_new[2*num_elements])
     tip_left.append(Q_new[0] + Q_new[2*num_elements])
     tip_right.append(Q_new[2*num_elements-2] + Q_new[2*num_elements])
-    time.append(T*dt)
+
+    tip_left_local.append(Q_new[0])
+    tip_right_local.append(Q_new[2*num_elements-2])
 
     Q_old = Q_new
-    #F_old[3*(num_elements-1)] = 0
 
-plt.plot(time, CG)
-plt.plot(time, tip_left)
-plt.plot(time, tip_right)
+plt.figure(1)
+plt.plot(t, CG)
+plt.plot(t, tip_left)
+plt.plot(t, tip_right)
 plt.xlabel("time (s)")
 plt.ylabel("displacement (m)")
 plt.legend(("CG", "Left Tip", "Right Tip"))
+
+plt.figure(2)
+plt.plot(t, tip_left_local)
+plt.plot(t, tip_right_local)
+plt.xlabel("time (s)")
+plt.ylabel("displacement (m)")
+plt.legend(("Left Tip", "Right Tip"))
+
 plt.show()
