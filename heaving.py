@@ -1,12 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy import signal
 from numpy.linalg import inv
-from scipy.linalg import eig
 
 # Define geometry
 semi_span = 5
-num_elements = 8
+num_elements = 4
 L_e = 2*semi_span/num_elements
 
 # Define structural properties
@@ -68,7 +66,7 @@ M_global = np.delete(M_global, num_elements, 1)
 zero_matrix = np.zeros((2*num_elements+1, 2*num_elements+1))
 identity = np.eye(2*num_elements+1)
 
-# Newmark Beta Method (Avg Acceleration)
+# Newmark-beta Method (Avg Acceleration)
 phi = 0.5 + alpha
 beta = 0.25*(phi+0.5)**2
 

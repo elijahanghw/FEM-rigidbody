@@ -10,7 +10,7 @@ r = 1     # Distance from C.G.
 
 # Define structural properties
 I_ext = 10      # External mass
-I_b = 100        # Moment of inertia per unit length
+I_b = 100       # Moment of inertia per unit length
 mu = 100        # Beam mass per unit length
 GJ = 1e2        # Bending stiffness
 I_total = I_ext + 2*semi_span*r**2 + 2*I_b*semi_span
