@@ -9,13 +9,13 @@ L_e = 2*semi_span/num_elements
 
 # Define structural properties
 M_ext = 10     # External mass
-I_ext = 10      # External moment of inertia
+I_ext = 100      # External moment of inertia
 r = 0.1           # Distance from C.G. to beam mass axis
-a = 0 # -0.18288  # Distance of elastic axis from mass axis
+a = -0.18288  # Distance of elastic axis from mass axis
 mu = 10     # Beam mass per unit length
 I_alpha = 8.64       # Moment of inertia per unit length
-EI = 9.77e20    # Bending stiffness
-GJ = 0.99e20         # Bending stiffness
+EI = 9.77e2    # Bending stiffness
+GJ = 0.99e2         # Torsional stiffness
 
 M_total = M_ext + 2*semi_span*mu
 I_total = 2*I_alpha*semi_span + I_ext + 2*semi_span*mu*r**2
@@ -53,7 +53,7 @@ S_e = mu*L_e*a/60*np.array([[0, 0, 21, 0, 0, 9],
 M_e = M_e + S_e
 
 Rh_e = np.array([[mu*L_e/2, mu*L_e**2/12, mu*a*L_e/2, mu*L_e/2, -mu*L_e**2/12, mu*a*L_e/2]])
-Rt_e = np.array([[mu*L_e*(a-r)/2, mu*L_e**2*(a-r)/12, (I_alpha-mu*a*r)*L_e/2, mu*L_e*(a-r)/2, -mu*L_e**2*(a-r)/12, (I_alpha-mu*a*r)*L_e/2]])
+Rt_e = np.array([[-mu*L_e*r/2, -mu*L_e**2*r/12, (I_alpha-mu*a*r)*L_e/2, -mu*L_e*r/2, mu*L_e**2*(a-r)/12, (I_alpha-mu*a*r)*L_e/2]])
 
 # Assemble Global Matrices
 K_global = np.zeros((3*(num_elements+1)+2, 3*(num_elements+1)+2))
@@ -78,10 +78,7 @@ M_global[-1:, 0:Rt_global.shape[1]] += Rt_global
 M_global[0:Rt_globalT.shape[0], -1:] += Rt_globalT
 
 M_global[-2,-2] = M_total
-M_global[-1,-1] = I_total - 2*2*semi_span*mu*a*r
-
-M_global[-1,-2] = 2*semi_span*mu*a
-M_global[-2,-1] = 2*semi_span*mu*a
+M_global[-1,-1] = I_total
 
 # Clamped-Free BC
 K_global = np.delete(K_global, int(3/2*num_elements), 0)
@@ -132,7 +129,7 @@ F_old = np.concatenate((F_old, np.zeros(3*num_elements+2), np.zeros(3*num_elemen
 
 F_old[0] = 0
 F_old[3*num_elements-3] = 0
-F_old[3*num_elements] = F_old[0] + F_old[num_elements-1] +10
+F_old[3*num_elements] = F_old[0] + F_old[num_elements-1] + 10
 F_old[3*num_elements+1] = -(r+a)*(F_old[0] + F_old[num_elements-1])
 
 CG_heave = []
